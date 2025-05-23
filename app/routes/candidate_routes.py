@@ -12,6 +12,11 @@ from app.utils.chart_utils import get_and_display_chart
 
 from app.models.job_model import Job
 
+from app.services.linkedin_service import fetch_linkedin_data, calculate_score
+from app.services.github_service import assign_marks, scaler, kmeans_model
+from app.services.transcript_service import process_pdf, JOB_DICTIONARY
+from werkzeug.utils import secure_filename
+
 
 candidate_routes = Blueprint('candidates', __name__)
 
