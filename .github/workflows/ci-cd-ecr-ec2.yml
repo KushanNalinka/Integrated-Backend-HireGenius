@@ -49,9 +49,16 @@ jobs:
             AWS_REGION=${{ env.AWS_REGION }}
             ECR_URI=${{ env.ECR_URI }}
 
+            # Install AWS CLI if not present
+            if ! command -v aws &> /dev/null; then
+              sudo apt update && sudo apt install -y awscli
+            fi
+
             # Login & pull new image
             aws ecr get-login-password --region $AWS_REGION | \
               docker login --username AWS --password-stdin $ECR_URI
+            
+
             docker pull $ECR_URI:latest
 
             # Replace running container
