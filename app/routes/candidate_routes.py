@@ -198,3 +198,40 @@ def calculate_finalized_score(candidate_id):
         "finalized_score": finalized_score
     }), 200
 
+@candidate_routes.route('/candidates/by-email', methods=['GET'])
+def get_candidate_by_email():
+    email = request.args.get('email')
+
+    if not email:
+        return jsonify({"error": "Email query parameter is required"}), 400
+
+    try:
+        candidate = candidates_collection.find_one({"confirmEmail": email})
+        if not candidate:
+            return jsonify({"error": "Candidate not found"}), 404
+
+        # Prepare customized response
+        filtered_response = {
+            "_id": str(candidate.get("_id")),
+            "confirmEmail": candidate.get("confirmEmail"),
+            "extractednoofprogramminglanguages": candidate.get("extractednoofprogramminglanguages", 0),
+            "extractednoofprogrammingframeworks": candidate.get("extractednoofprogrammingframeworks", 0),
+            "extractednoofwebtechnologies": candidate.get("extractednoofwebtechnologies", 0),
+            "extractednoofdatabasetechnologies": candidate.get("extractednoofdatabasetechnologies", 0),
+            "extractednoofsoftwaredevelopmentmethodologies": candidate.get("extractednoofsoftwaredevelopmentmethodologies", 0),
+            "extractednoofversioncontroltechnologies": candidate.get("extractednoofversioncontroltechnologies", 0),
+            "extractednoofdevopstools": candidate.get("extractednoofdevopstools", 0),
+            "extractednoofcloudtechnologies": candidate.get("extractednoofcloudtechnologies", 0),
+            "lastName": candidate.get("lastName"),
+            "firstName": candidate.get("firstName"),
+            "noofyearsofexperience": candidate.get("noofyearsofexperience"),
+            "jobPosition": candidate.get("jobPosition"),
+            "jobID": candidate.get("jobID"),
+            "jobTitle": candidate.get("jobTitle"),
+            "salaryRange": candidate.get("salaryRange"),
+        }
+
+        return jsonify(filtered_response), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
