@@ -51,3 +51,18 @@ def update_job(jobID):
 @job_routes.route('/uploads/general/<filename>', methods=['GET'])
 def serve_general_file(filename):
     return send_from_directory(UPLOAD_FOLDER_GENERAL, filename)
+
+# NEW ROUTE: Get all jobs with only selected fields (_id, jobTitle, jobName, technology)
+@job_routes.route('/jobs/summary', methods=['GET'])
+def get_jobs_summary():
+    jobs = Job.get_all()
+    summarized_jobs = [
+        {
+            "_id": job.get("_id"),
+            "jobTitle": job.get("jobTitle"),
+            "jobName": job.get("jobName"),
+            "technology": job.get("technology")
+        }
+        for job in jobs
+    ]
+    return jsonify(summarized_jobs), 200

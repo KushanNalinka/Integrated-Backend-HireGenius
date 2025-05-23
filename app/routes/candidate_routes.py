@@ -155,18 +155,7 @@ def display_candidate_chart(candidateID):
     get_and_display_chart(candidateID)
     return jsonify({"message": "Chart displayed successfully"}), 200
 
-@candidate_routes.route('/candidates/generate_charts/<candidateID>', methods=['POST'])
-def create_all_charts(candidateID):
-    candidate = Candidate.get_by_id(candidateID)
-    if not candidate:
-        return jsonify({"error": "Candidate not found"}), 404
 
-    cv_text = candidate.get('cv_text', '')
-    if not cv_text:
-        return jsonify({"error": "CV text not available"}), 400
-
-    charts = generate_all_charts(cv_text)
-    Candidate.update(candidateID, {"charts": charts})
     
     return jsonify({"message": "Charts generated successfully", "charts": charts}), 200
 
