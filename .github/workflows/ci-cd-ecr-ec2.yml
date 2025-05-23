@@ -1,0 +1,62 @@
+# --------------------------------------------------------------
+# Build image → push to ECR → pull & run on EC2 (port 5000)
+# --------------------------------------------------------------
+name: ci-cd-ecr-ec2
+
+on:
+  push:
+    branches: [ "main" ]
+
+env:
+  AWS_REGION:     ${{ secrets.AWS_REGION }}            # e.g. us-east-1
+  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}        # 12-digit ID
+  ECR_REPO:       ${{ secrets.ECR_REPO }}              # hiregenius-backend
+  ECR_URI:        ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO }}
+
+jobs:
+  build-push-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # 1️⃣ Checkout code
+      - uses: actions/checkout@v4
+
+      # 2️⃣ AWS creds
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region:            ${{ env.AWS_REGION }}
+
+      # 3️⃣ ECR login
+      - uses: aws-actions/amazon-ecr-login@v2
+
+      # 4️⃣ Build & push :latest and :<SHA>
+      - uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.ECR_URI }}:latest
+            ${{ env.ECR_URI }}:${{ github.sha }}
+
+      # 5️⃣ SSH into EC2 and run new image
+      - uses: appleboy/ssh-action@v1
+        with:
+          host:     ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}      # usually ec2-user
+          key:      ${{ secrets.EC2_KEY }}       # private PEM
+          script: |
+            AWS_REGION=${{ env.AWS_REGION }}
+            ECR_URI=${{ env.ECR_URI }}
+
+            # Login & pull new image
+            aws ecr get-login-password --region $AWS_REGION | \
+              docker login --username AWS --password-stdin $ECR_URI
+            docker pull $ECR_URI:latest
+
+            # Replace running container
+            docker stop backend || true
+            docker rm   backend || true
+            docker run -d --name backend -p 5000:5000 \
+              -e MONGO_URI='${{ secrets.MONGO_URI }}' \
+              $ECR_URI:latest
