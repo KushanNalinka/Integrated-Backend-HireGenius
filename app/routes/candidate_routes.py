@@ -240,6 +240,116 @@ def get_candidate_by_email():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+
+###################
+# Github Analysis
+###################
+@candidate_routes.route('/candidates/getCandidateGithubScore', methods=['POST'])
+def get_candidate_github_score():
+    try:
+        # Parse input JSON data
+        data = request.json
+        if not data:
+            return jsonify({"error": "No input data provided"}), 400
+
+        #Extract MArks from the request
+        allocatedMarks = data.get('marks')
+        
+        # Extract features from the request
+        features = data.get('features')  # Expecting a list of features
+        if not features:
+            return jsonify({"error": "Features missing in request"}), 400
+
+
+        if(features[0]==0):
+            response = {
+                "prediction": 0,   
+                "marks": 0
+            }
+            return jsonify(response), 200
+
+        # Convert features to numpy array
+        features = np.array(features).reshape(1, -1)  # Adjust shape if needed
+
+        # Normalize the features
+        features_normalized = scaler.transform(features)
+
+        # Verify the normalized data (optional for debugging)
+        print("Normalized Features:", features_normalized)
+
+        # Make prediction
+        prediction = kmeans_model.predict(features_normalized)  # Use the model's predict method
+        print("Prediction:", prediction)
+
+        # Convert the prediction to a native Python type (float)
+        prediction = prediction[0] if isinstance(prediction, np.ndarray) else prediction
+
+        # Assign marks based on the prediction (assuming it's a scalar output)
+        marks = assign_marks(prediction, allocatedMarks)
+
+        # Prepare response
+        response = {
+            "prediction": float(prediction),  # Ensure it's a native float
+            "marks": marks
+        }
+
+        return jsonify(response), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+
+###################
+# LinkedIn Profile Processing
+###################
+@candidate_routes.route('/candidates/getCandidateLinkedinScore', methods=['POST'])
+def get_candidate_linkedin_score():
+    data = request.get_json()
+    username = data.get('username')
+    job_data = data.get('job_data')
+     
+    try:
+        linkedin_profile = fetch_linkedin_data(username)
+         
+        score = calculate_score(linkedin_profile, job_data)
+         
+        return jsonify({"candidate_score": score, "linkedin_profile": linkedin_profile})
+    except Exception as e:
+       
+        return jsonify({"error": str(e)}), 500
+
+####################
+# Transcript Processing
+####################
+@candidate_routes.route('/candidates/getCandidateTranscriptScore', methods=['POST'])
+def get_candidate_transcript_score():
+
+    if 'file' not in request.files:
+        return jsonify({"success": False, "message": "No file provided"}), 400
+
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"success": False, "message": "No file selected!"}), 400
+
+    job_role = request.form.get('job_role')
+    if not job_role:
+        return jsonify({"success": False, "message": "No job role"}), 400
+
+    
+    if job_role not in JOB_DICTIONARY:
+        return jsonify({"success": False, "message": "Invalid job role"}), 400
+    
+    filename = secure_filename(file.filename)
+    file_path = os.path.join(UPLOAD_FOLDER_TRANSCRIPT_EVALUATION, filename)
+    file.save(file_path)
+     
+    score = process_pdf(file_path, job_role)
+    return jsonify({"success": True, "score": score})
+
+
+
 
 
 ###################
