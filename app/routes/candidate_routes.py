@@ -27,9 +27,11 @@ candidates_collection = db["candidates"]  # Define candidates_collection
 # Define folders for CV and transcripts
 UPLOAD_FOLDER_CV = os.path.join(os.getcwd(), 'uploads/cv')
 UPLOAD_FOLDER_TRANSCRIPTS = os.path.join(os.getcwd(), 'uploads/transcripts')
+UPLOAD_FOLDER_TRANSCRIPT_EVALUATION = os.path.join(os.getcwd(), 'uploads/transcript_evaluation')
 
 os.makedirs(UPLOAD_FOLDER_CV, exist_ok=True)
 os.makedirs(UPLOAD_FOLDER_TRANSCRIPTS, exist_ok=True)
+os.makedirs(UPLOAD_FOLDER_TRANSCRIPT_EVALUATION, exist_ok=True)
 
 # Load the trained stacked model
 model_path = os.path.join(os.getcwd(), "local_model", "stacked_model_new.joblib")

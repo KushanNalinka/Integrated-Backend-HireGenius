@@ -30,8 +30,8 @@ def fetch_linkedin_data(username):
     url = "https://linkedin-data-api.p.rapidapi.com/"
     querystring = {"username": username}
     headers = {
-        #"x-rapidapi-key": "ad440e2882mshd6f9b0aed9a84e0p19f8d9jsnccf873cb409e",
-        "x-rapidapi-key": "d8c96f55e5mshed0fafa54c1f119p14056djsn58663d192484",
+        "x-rapidapi-key": "ad440e2882mshd6f9b0aed9a84e0p19f8d9jsnccf873cb409e",
+        #"x-rapidapi-key": "d8c96f55e5mshed0fafa54c1f119p14056djsn58663d192484",
         "x-rapidapi-host": "linkedin-data-api.p.rapidapi.com"
     }
 

@@ -6,7 +6,7 @@ import os
 # Set paths
 # We need to set the path for Tesseract and Poppler in Ubuntu
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-poppler_path = r"C:\Program Files\poppler-24.08.0\Library\bin"
+poppler_path = r"C:\Program Files\poppler-20.12.1\Library\bin"
 
 # Define grading system
 MARK_ALLOCATION = {
