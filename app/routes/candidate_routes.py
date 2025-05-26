@@ -367,16 +367,9 @@ def update_candidate_with_github_marks(candidate_id):
     if github_mark is None:
         return jsonify({"error": "githubMark is required"}), 400
     
-    try:
-        object_id = ObjectId(candidate_id)
-    except Exception as e:
-        print("Invalid ObjectId:", e)
-        return jsonify({"error": "Invalid candidate ID"}), 400
-
-    result = candidates_collection.update_one({"_id": object_id}, {"$set": {"github_marks": github_mark}})
-
-    if result.matched_count == 0:
-        return jsonify({"error": "Candidate not found"}), 404
+    Candidate.update(candidate_id, {
+        "github_marks": github_mark
+    })
 
     return jsonify({"message": "GitHub marks updated successfully"})
 
@@ -388,16 +381,9 @@ def update_candidate_with_linkedin_marks(candidate_id):
     if linkedin_mark is None:
         return jsonify({"error": "linkedinMark is required"}), 400
 
-    try:
-        object_id = ObjectId(candidate_id)
-    except Exception as e:
-        print("Invalid ObjectId:", e)
-        return jsonify({"error": "Invalid candidate ID"}), 400
-
-    result = candidates_collection.update_one({"_id": object_id}, {"$set": {"linkedin_marks": linkedin_mark}})
-    
-    if result.matched_count == 0:
-        return jsonify({"error": "Candidate not found"}), 404
+    Candidate.update(candidate_id, {
+        "linkedin_marks": linkedin_mark
+    })
     
     return jsonify({"message": "LinkedIn marks updated successfully"})
 
@@ -409,15 +395,8 @@ def update_candidate_with_transcript_marks(candidate_id):
     if transcript_mark is None:
         return jsonify({"error": "transcriptMark is required"}), 400
     
-    try:
-        object_id = ObjectId(candidate_id)
-    except Exception as e:
-        print("Invalid ObjectId:", e)
-        return jsonify({"error": "Invalid candidate ID"}), 400  
-
-    result = candidates_collection.update_one({"_id": object_id}, {"$set": {"transcript_marks": transcript_mark}})
-    
-    if result.matched_count == 0:
-        return jsonify({"error": "Candidate not found"}), 404
+    Candidate.update(candidate_id, {
+        "transcript_marks": transcript_mark
+    })
 
     return jsonify({"message": "Transcript marks updated successfully"})

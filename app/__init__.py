@@ -91,7 +91,7 @@ def create_app():
                            "or pass it as an environment variable in production.")
 
     client = MongoClient(mongo_uri)
-    db     = client["ResumeProjectDB"]
+    db     = client["ResearchProjectNewDB"]
 
     from app.routes.job_routes       import job_routes
     from app.routes.candidate_routes import candidate_routes
