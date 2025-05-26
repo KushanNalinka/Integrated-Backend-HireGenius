@@ -16,7 +16,7 @@ MARK_ALLOCATION = {
 
 # Define job dictionary
 JOB_DICTIONARY = {
-    "Intern Software Engineer": [
+    "Undergraduate Trainee": [
         "Fundamentals of Programming", "Data Structures and Algorithms", "Version Control (Git)",
         "Basic Database Concepts", "Debugging Techniques", "Software Development Lifecycle"
     ],
@@ -40,7 +40,7 @@ JOB_DICTIONARY = {
         "Software Architecture", "Team Leadership", "CI/CD and DevOps", "Cloud Infrastructure",
         "Security and Compliance", "Performance Optimization", "Cross-Team Collaboration"
     ],
-    "Senior Tech Lead": [
+    "Senior Lead Software Engineer": [
         "Enterprise Architecture", "Strategic Technology Planning", "Cross-Functional Leadership",
         "System Scalability", "Cloud Security", "Microservices and API Management"
     ],
